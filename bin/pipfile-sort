@@ -1,0 +1,12 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+if __name__ == '__main__':
+    LIBDIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    if os.path.exists(os.path.join(LIBDIR, 'pipfile_sort')):
+        sys.path.insert(0, LIBDIR)
+
+    from pipfile_sort import main
+    main()

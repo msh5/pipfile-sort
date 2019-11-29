@@ -3,7 +3,7 @@ import plette
 PIPFILE_FILENAME = './Pipfile'
 PIPFILE_ENCODING = 'utf-8'
 
-if __name__ == '__main__':
+def main():
     # Load current data.
     with open(PIPFILE_FILENAME, encoding=PIPFILE_ENCODING) as f:
         pipfile = plette.Pipfile.load(f)
@@ -25,3 +25,4 @@ if __name__ == '__main__':
     # Store sorted data.
     with open(PIPFILE_FILENAME, 'w', encoding=PIPFILE_ENCODING) as f:
         plette.Pipfile.dump(pipfile, f)
+

@@ -5,9 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+twine = "*"
 
 [packages]
 plette = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+package = "pipenv run python setup.py sdist --formats=gztar"
+pubtest = "pipenv run twine upload --repository pypitest dist/*"
+publish = "pipenv run twine upload --repository pypi dist/*"
