@@ -8,6 +8,7 @@ pylint = "*"
 twine = "*"
 
 [packages]
+click = "*"
 plette = "*"
 
 [requires]

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "07fae023c2b27fe3eb1f5d5d2d78775dc07a6f0edd410829b41da88baa796c64"
+            "sha256": "302c6e3f4b2ddfbcf834c673717136c874e0c7414d45d190c5642ab1dede63e2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,14 @@
         ]
     },
     "default": {
+        "click": {
+            "hashes": [
+                "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13",
+                "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"
+            ],
+            "index": "pypi",
+            "version": "==7.0"
+        },
         "plette": {
             "hashes": [
                 "sha256:46402c03e36d6eadddad2a5125990e322dd74f98160c8f2dcd832b2291858a26",
@@ -76,13 +84,6 @@
             ],
             "version": "==0.15.2"
         },
-        "entrypoints": {
-            "hashes": [
-                "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19",
-                "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"
-            ],
-            "version": "==0.3"
-        },
         "idna": {
             "hashes": [
                 "sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407",
@@ -99,10 +100,10 @@
         },
         "keyring": {
             "hashes": [
-                "sha256:91037ccaf0c9a112a76f7740e4a416b9457a69b66c2799421581bee710a974b3",
-                "sha256:f5bb20ea6c57c2360daf0c591931c9ea0d7660a8d9e32ca84d63273f131ea605"
+                "sha256:9b80469783d3f6106bce1d389c6b8b20c8d4d739943b1b8cd0ddc2a45d065f9d",
+                "sha256:ee3d35b7f1ac3cb69e9a1e4323534649d3ab2fea402738a77e4250c152970fed"
             ],
-            "version": "==19.2.0"
+            "version": "==19.3.0"
         },
         "lazy-object-proxy": {
             "hashes": [
@@ -189,10 +190,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:5a1f3d58f3eb53264387394387fe23df469d2a3fab98c9e7f99d5c146c119873",
-                "sha256:f1a1613fee07cc30a253051617f2a219a785c58877f9f6bfa129446cbaf8b4c1"
+                "sha256:156a0565f09d1f0ef8242932a0e1302462c93827a87ba7b4423d90f01befe94c",
+                "sha256:c0ffb55959ea5f3eaeece8d2db0651ba9ced9c72f40a6cce3419330256234289"
             ],
-            "version": "==4.39.0"
+            "version": "==4.40.0"
         },
         "twine": {
             "hashes": [
