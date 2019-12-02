@@ -1,21 +1,24 @@
 from click import command
 from click import option
-import plette
+from click import version_option
+from plette import Pipfile
+from plette.pipfiles import PackageCollection
 import sys
 
-
+APP_VERSION = '0.1.0'
 PIPFILE_FILENAME = './Pipfile'
 PIPFILE_ENCODING = 'utf-8'
 
 
 @command()
+@version_option(version=APP_VERSION)
 @option('--exit-code', is_flag=True, help=
     'change to behavior of exit code. default behavior of return value, 0 is no differences, 1 is error exit. '
     'return 2 when add this option. 2 is exists differences.')
 def main(exit_code):
     # Load current data.
     with open(PIPFILE_FILENAME, encoding=PIPFILE_ENCODING) as f:
-        pipfile = plette.Pipfile.load(f)
+        pipfile = Pipfile.load(f)
 
     # Sort "dev-packages" mapping.
     sorted_dev_packages, all_changed = __sort_collection(pipfile.dev_packages)
@@ -31,7 +34,7 @@ def main(exit_code):
 
     # Store sorted data.
     with open(PIPFILE_FILENAME, 'w', encoding=PIPFILE_ENCODING) as f:
-        plette.Pipfile.dump(pipfile, f)
+        Pipfile.dump(pipfile, f)
 
     # When --exit-code option is valid and package collection has been changed, exit with 2.
     if exit_code and all_changed:
@@ -43,7 +46,7 @@ def __sort_collection(org_collection):
     sorted_packages = sorted(org_packages)
 
     return (
-        plette.pipfiles.PackageCollection({
+        PackageCollection({
             p: org_collection[p]._data for p in sorted_packages
         }),
         org_packages != sorted_packages,
