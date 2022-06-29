@@ -1,0 +1,7 @@
+- id: pipfile-sort
+  name: Sorts pipfile.
+  description: Sort package dependency lists in Pipfile. 
+  entry: pipfile-sort
+  language: python
+  types: [text]
+  files: Pipfile
