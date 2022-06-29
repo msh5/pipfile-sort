@@ -1,7 +1,6 @@
 - id: pipfile-sort
   name: Sorts pipfile.
-  description: Sort package dependency lists in Pipfile. 
+  description: Sort package dependency lists in Pipfile, namely 'packages' and 'dev-packages'
   entry: pipfile-sort
   language: python
-  types: [text]
-  files: Pipfile
+  pass_filenames: false
