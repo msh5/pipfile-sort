@@ -5,7 +5,7 @@ from click import command, option, version_option
 from plette import Pipfile
 from plette.pipfiles import PackageCollection
 
-APP_VERSION = "0.4.1"
+APP_VERSION = "0.4.2"
 PIPFILE_FILENAME = "./Pipfile"
 PIPFILE_ENCODING = "utf-8"
 

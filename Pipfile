@@ -9,7 +9,7 @@ twine = "*"
 
 [packages]
 click = "*"
-plette = "*"
+plette = "==0.4.4"
 
 [requires]
 python_version = "3.8"
