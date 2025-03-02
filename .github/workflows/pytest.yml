@@ -23,7 +23,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pipenv
-        pipenv install --dev
+        pipenv install --dev --python $(which python)
     - name: Run tests
       run: |
         pipenv run pytest
