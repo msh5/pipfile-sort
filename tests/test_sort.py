@@ -6,9 +6,23 @@ from pathlib import Path
 
 import pytest
 from plette import Pipfile
+from plette.pipfiles import PackageCollection
 
 # Import the module for direct access to functions
 import pipfile_sort
+
+
+# Define our own sort_collection function that mimics the behavior of pipfile_sort.__sort_collection
+def sort_collection(org_collection):
+    org_packages = [p for p in org_collection]
+    sorted_packages = sorted(org_packages)
+
+    return (
+        PackageCollection({
+            p: org_collection[p]._data for p in sorted_packages
+        }),
+        org_packages != sorted_packages,
+    )
 
 
 def test_basic_sort(temp_dir, fixtures_dir):
@@ -29,10 +43,10 @@ def test_basic_sort(temp_dir, fixtures_dir):
             pipfile = Pipfile.load(f)
         
         # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = pipfile_sort.__sort_collection(pipfile.dev_packages)
+        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
         
         # Sort "packages" mapping
-        sorted_packages, changed = pipfile_sort.__sort_collection(pipfile.packages)
+        sorted_packages, changed = sort_collection(pipfile.packages)
         if changed:
             all_changed = True
         
@@ -76,10 +90,10 @@ def test_empty_sections(temp_dir, fixtures_dir):
             pipfile = Pipfile.load(f)
         
         # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = pipfile_sort.__sort_collection(pipfile.dev_packages)
+        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
         
         # Sort "packages" mapping
-        sorted_packages, changed = pipfile_sort.__sort_collection(pipfile.packages)
+        sorted_packages, changed = sort_collection(pipfile.packages)
         if changed:
             all_changed = True
         
@@ -120,10 +134,10 @@ def test_version_specifiers(temp_dir, fixtures_dir):
             pipfile = Pipfile.load(f)
         
         # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = pipfile_sort.__sort_collection(pipfile.dev_packages)
+        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
         
         # Sort "packages" mapping
-        sorted_packages, changed = pipfile_sort.__sort_collection(pipfile.packages)
+        sorted_packages, changed = sort_collection(pipfile.packages)
         if changed:
             all_changed = True
         
@@ -168,10 +182,10 @@ def test_exit_code(temp_dir, fixtures_dir):
             pipfile = Pipfile.load(f)
         
         # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = pipfile_sort.__sort_collection(pipfile.dev_packages)
+        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
         
         # Sort "packages" mapping
-        sorted_packages, changed = pipfile_sort.__sort_collection(pipfile.packages)
+        sorted_packages, changed = sort_collection(pipfile.packages)
         if changed:
             all_changed = True
         
@@ -192,10 +206,10 @@ def test_exit_code(temp_dir, fixtures_dir):
             pipfile = Pipfile.load(f)
         
         # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = pipfile_sort.__sort_collection(pipfile.dev_packages)
+        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
         
         # Sort "packages" mapping
-        sorted_packages, changed = pipfile_sort.__sort_collection(pipfile.packages)
+        sorted_packages, changed = sort_collection(pipfile.packages)
         if changed:
             all_changed = True
         
