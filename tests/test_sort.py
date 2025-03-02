@@ -3,6 +3,7 @@ import shutil
 import sys
 import subprocess
 from pathlib import Path
+from contextlib import contextmanager
 
 import pytest
 from plette import Pipfile
@@ -25,159 +26,106 @@ def sort_collection(org_collection):
     )
 
 
-def test_basic_sort(temp_dir, fixtures_dir):
-    """Test basic sorting of packages."""
-    # Copy the fixture Pipfile to the temporary directory
-    fixture_path = fixtures_dir / "basic" / "Pipfile"
-    sorted_fixture_path = fixtures_dir / "basic" / "Pipfile.sorted"
+@contextmanager
+def change_dir(path):
+    """Context manager for changing the current working directory."""
+    original_dir = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(original_dir)
+
+
+def setup_test_pipfile(temp_dir, fixtures_dir, fixture_subdir, fixture_name="Pipfile"):
+    """Set up a test Pipfile in the temporary directory."""
+    fixture_path = fixtures_dir / fixture_subdir / fixture_name
     temp_pipfile = Path(temp_dir) / "Pipfile"
     
     shutil.copy(fixture_path, temp_pipfile)
+    return temp_pipfile
+
+
+def sort_pipfile(pipfile_path):
+    """Sort a Pipfile and return the sorted Pipfile and whether changes were made."""
+    # Load current data
+    with open(pipfile_path, encoding="utf-8") as f:
+        pipfile = Pipfile.load(f)
     
-    # Change working directory to temp_dir and run the sort function directly
-    original_dir = os.getcwd()
-    os.chdir(temp_dir)
-    try:
-        # Load current data
-        with open(temp_pipfile, encoding="utf-8") as f:
-            pipfile = Pipfile.load(f)
+    # Sort "dev-packages" mapping
+    sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
+    
+    # Sort "packages" mapping
+    sorted_packages, changed = sort_collection(pipfile.packages)
+    if changed:
+        all_changed = True
+    
+    # Replace with sorted lists
+    pipfile.dev_packages = sorted_dev_packages
+    pipfile.packages = sorted_packages
+    
+    # Store sorted data
+    with open(pipfile_path, 'w', encoding="utf-8") as f:
+        Pipfile.dump(pipfile, f)
+    
+    return pipfile, all_changed
+
+
+def load_pipfile(pipfile_path):
+    """Load a Pipfile from a path."""
+    with open(pipfile_path, "r", encoding="utf-8") as f:
+        return Pipfile.load(f)
+
+
+def run_sort_test(temp_dir, fixtures_dir, fixture_subdir, has_expected_file=True):
+    """Run a sort test with the given fixture subdirectory."""
+    # Set up test files
+    temp_pipfile = setup_test_pipfile(temp_dir, fixtures_dir, fixture_subdir)
+    
+    # Change directory and sort the Pipfile
+    with change_dir(temp_dir):
+        # Sort the Pipfile
+        sorted_pipfile, all_changed = sort_pipfile(temp_pipfile)
         
-        # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-        
-        # Sort "packages" mapping
-        sorted_packages, changed = sort_collection(pipfile.packages)
-        if changed:
-            all_changed = True
-        
-        # Replace with sorted lists
-        pipfile.dev_packages = sorted_dev_packages
-        pipfile.packages = sorted_packages
-        
-        # Store sorted data
-        with open(temp_pipfile, 'w', encoding="utf-8") as f:
-            Pipfile.dump(pipfile, f)
-        
-        # Load the sorted Pipfile
-        with open(temp_pipfile, "r", encoding="utf-8") as f:
-            sorted_pipfile = Pipfile.load(f)
+        # If there's an expected file, compare with it
+        if has_expected_file:
+            sorted_fixture_path = fixtures_dir / fixture_subdir / "Pipfile.sorted"
+            expected_pipfile = load_pipfile(sorted_fixture_path)
             
-        # Load the expected sorted Pipfile
-        with open(sorted_fixture_path, "r", encoding="utf-8") as f:
-            expected_pipfile = Pipfile.load(f)
+            # Check that the packages are sorted correctly
+            assert list(sorted_pipfile.packages) == list(expected_pipfile.packages)
+            assert list(sorted_pipfile.dev_packages) == list(expected_pipfile.dev_packages)
             
-        # Check that the packages are sorted correctly
-        assert list(sorted_pipfile.packages) == list(expected_pipfile.packages)
-        assert list(sorted_pipfile.dev_packages) == list(expected_pipfile.dev_packages)
-    finally:
-        os.chdir(original_dir)
+        return sorted_pipfile, all_changed
+
+
+def test_basic_sort(temp_dir, fixtures_dir):
+    """Test basic sorting of packages."""
+    run_sort_test(temp_dir, fixtures_dir, "basic")
 
 
 def test_empty_sections(temp_dir, fixtures_dir):
     """Test sorting of empty package sections."""
-    # Copy the fixture Pipfile to the temporary directory
-    fixture_path = fixtures_dir / "empty_sections" / "Pipfile"
-    temp_pipfile = Path(temp_dir) / "Pipfile"
+    sorted_pipfile, _ = run_sort_test(temp_dir, fixtures_dir, "empty_sections", has_expected_file=False)
     
-    shutil.copy(fixture_path, temp_pipfile)
-    
-    # Change working directory to temp_dir and run the sort function directly
-    original_dir = os.getcwd()
-    os.chdir(temp_dir)
-    try:
-        # Load current data
-        with open(temp_pipfile, encoding="utf-8") as f:
-            pipfile = Pipfile.load(f)
-        
-        # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-        
-        # Sort "packages" mapping
-        sorted_packages, changed = sort_collection(pipfile.packages)
-        if changed:
-            all_changed = True
-        
-        # Replace with sorted lists
-        pipfile.dev_packages = sorted_dev_packages
-        pipfile.packages = sorted_packages
-        
-        # Store sorted data
-        with open(temp_pipfile, 'w', encoding="utf-8") as f:
-            Pipfile.dump(pipfile, f)
-        
-        # Load the sorted Pipfile
-        with open(temp_pipfile, "r", encoding="utf-8") as f:
-            sorted_pipfile = Pipfile.load(f)
-            
-        # Check that the empty sections are handled correctly
-        assert list(sorted_pipfile.packages) == []
-        assert list(sorted_pipfile.dev_packages) == []
-    finally:
-        os.chdir(original_dir)
+    # Check that the empty sections are handled correctly
+    assert list(sorted_pipfile.packages) == []
+    assert list(sorted_pipfile.dev_packages) == []
 
 
 def test_version_specifiers(temp_dir, fixtures_dir):
     """Test sorting of packages with version specifiers."""
-    # Copy the fixture Pipfile to the temporary directory
-    fixture_path = fixtures_dir / "version_specifiers" / "Pipfile"
-    sorted_fixture_path = fixtures_dir / "version_specifiers" / "Pipfile.sorted"
-    temp_pipfile = Path(temp_dir) / "Pipfile"
-    
-    shutil.copy(fixture_path, temp_pipfile)
-    
-    # Change working directory to temp_dir and run the sort function directly
-    original_dir = os.getcwd()
-    os.chdir(temp_dir)
-    try:
-        # Load current data
-        with open(temp_pipfile, encoding="utf-8") as f:
-            pipfile = Pipfile.load(f)
-        
-        # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-        
-        # Sort "packages" mapping
-        sorted_packages, changed = sort_collection(pipfile.packages)
-        if changed:
-            all_changed = True
-        
-        # Replace with sorted lists
-        pipfile.dev_packages = sorted_dev_packages
-        pipfile.packages = sorted_packages
-        
-        # Store sorted data
-        with open(temp_pipfile, 'w', encoding="utf-8") as f:
-            Pipfile.dump(pipfile, f)
-        
-        # Load the sorted Pipfile
-        with open(temp_pipfile, "r", encoding="utf-8") as f:
-            sorted_pipfile = Pipfile.load(f)
-            
-        # Load the expected sorted Pipfile
-        with open(sorted_fixture_path, "r", encoding="utf-8") as f:
-            expected_pipfile = Pipfile.load(f)
-            
-        # Check that the packages are sorted correctly
-        assert list(sorted_pipfile.packages) == list(expected_pipfile.packages)
-        assert list(sorted_pipfile.dev_packages) == list(expected_pipfile.dev_packages)
-    finally:
-        os.chdir(original_dir)
+    run_sort_test(temp_dir, fixtures_dir, "version_specifiers")
 
 
 def test_exit_code(temp_dir, fixtures_dir):
     """Test the --exit-code flag."""
-    # Copy the fixture Pipfile to the temporary directory
-    fixture_path = fixtures_dir / "basic" / "Pipfile"
-    temp_pipfile = Path(temp_dir) / "Pipfile"
+    # Set up test files
+    temp_pipfile = setup_test_pipfile(temp_dir, fixtures_dir, "basic")
     
-    shutil.copy(fixture_path, temp_pipfile)
-    
-    # Change working directory to temp_dir
-    original_dir = os.getcwd()
-    os.chdir(temp_dir)
-    try:
-        # First run - should make changes and return exit code 2
-        # Load current data
+    # Change directory and run the sort twice
+    with change_dir(temp_dir):
+        # First run - should make changes
         with open(temp_pipfile, encoding="utf-8") as f:
             pipfile = Pipfile.load(f)
         
@@ -201,7 +149,6 @@ def test_exit_code(temp_dir, fixtures_dir):
         assert all_changed is True
         
         # Second run - should not make changes
-        # Load current data
         with open(temp_pipfile, encoding="utf-8") as f:
             pipfile = Pipfile.load(f)
         
@@ -223,5 +170,3 @@ def test_exit_code(temp_dir, fixtures_dir):
         
         # Check that no changes were made
         assert all_changed is False
-    finally:
-        os.chdir(original_dir)
