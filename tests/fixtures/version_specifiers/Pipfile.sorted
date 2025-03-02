@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "==21.5b2"
+pylint = "~=2.8.0"
+pytest = ">=6.0.0"
+
+[packages]
+django = "==3.2.0"
+flask = "~=2.0.0"
+requests = ">=2.25.0"
+
+[requires]
+python_version = "3.8"
