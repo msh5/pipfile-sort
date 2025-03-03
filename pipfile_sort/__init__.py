@@ -1,9 +1,9 @@
+import sys
 from click import command
 from click import option
 from click import version_option
 from plette import Pipfile
 from plette.pipfiles import PackageCollection
-import sys
 
 APP_VERSION = '0.2.2'
 PIPFILE_FILENAME = './Pipfile'
