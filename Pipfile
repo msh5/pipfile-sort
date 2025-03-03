@@ -7,6 +7,8 @@ verify_ssl = true
 pylint = "*"
 twine = "*"
 pytest = "*"
+flake8 = "*"
+black = "*"
 
 [packages]
 click = "*"
@@ -19,3 +21,5 @@ package = "pipenv run python setup.py sdist --formats=gztar"
 pubtest = "pipenv run twine upload --repository pypitest dist/*"
 publish = "pipenv run twine upload --repository pypi dist/*"
 test = "pipenv run pytest"
+lint = "pipenv run flake8 pipfile_sort tests && pipenv run pylint pipfile_sort tests"
+format = "pipenv run black pipfile_sort tests"
