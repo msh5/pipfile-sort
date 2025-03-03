@@ -13,6 +13,17 @@ from plette.pipfiles import PackageCollection
 import pipfile_sort
 
 
+@contextmanager
+def change_dir(path):
+    """Context manager for changing the current working directory."""
+    original_dir = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(original_dir)
+
+
 def test_basic_sort(temp_dir, fixtures_dir):
     """Test basic sorting of packages."""
     run_sort_test(temp_dir, fixtures_dir, "basic")
@@ -92,14 +103,3 @@ def run_sort_test(temp_dir, fixtures_dir, fixture_subdir, has_expected_file=True
             assert list(sorted_pipfile.dev_packages) == list(expected_pipfile.dev_packages)
             
         return sorted_pipfile, all_changed
-
-
-@contextmanager
-def change_dir(path):
-    """Context manager for changing the current working directory."""
-    original_dir = os.getcwd()
-    try:
-        os.chdir(path)
-        yield
-    finally:
-        os.chdir(original_dir)
