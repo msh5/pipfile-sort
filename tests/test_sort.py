@@ -32,8 +32,8 @@ def test_empty_sections(temp_dir, fixtures_dir):
     )
 
     # Check that the empty sections are handled correctly
-    assert list(sorted_pipfile.packages) == []
-    assert list(sorted_pipfile.dev_packages) == []
+    assert not list(sorted_pipfile.packages)
+    assert not list(sorted_pipfile.dev_packages)
 
 
 def test_version_specifiers(temp_dir, fixtures_dir):
@@ -98,6 +98,8 @@ def run_sort_test(temp_dir, fixtures_dir, fixture_subdir, has_expected_file=True
 
             # Check that the packages are sorted correctly
             assert list(sorted_pipfile.packages) == list(expected_pipfile.packages)
-            assert list(sorted_pipfile.dev_packages) == list(expected_pipfile.dev_packages)
+            assert list(sorted_pipfile.dev_packages) == list(
+                expected_pipfile.dev_packages
+            )
 
         return sorted_pipfile, all_changed

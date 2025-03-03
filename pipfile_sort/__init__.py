@@ -5,22 +5,31 @@ from click import version_option
 from plette import Pipfile
 from plette.pipfiles import PackageCollection
 
-APP_VERSION = '0.2.2'
-PIPFILE_FILENAME = './Pipfile'
-PIPFILE_ENCODING = 'utf-8'
+APP_VERSION = "0.2.2"
+PIPFILE_FILENAME = "./Pipfile"
+PIPFILE_ENCODING = "utf-8"
 
 
 @command()
 @version_option(version=APP_VERSION)
-@option('--exit-code', is_flag=True, help='change to behavior of exit code. default behavior of return value, '
-        '0 is no differences, 1 is error exit. return 2 when add this option. 2 is exists differences.')
+@option(
+    "--exit-code",
+    is_flag=True,
+    help="change to behavior of exit code. default behavior of return value, "
+    "0 is no differences, 1 is error exit. return 2 when add this option. "
+    "2 is exists differences.",
+)
 def main(exit_code):
     # Sort the Pipfile and get whether changes were made
     _, all_changed = sort_pipfile(PIPFILE_FILENAME, PIPFILE_ENCODING)
 
-    # When --exit-code option is valid and package collection has been changed, exit with 2.
+    # Exit code handling based on changes and flags
     if exit_code and all_changed:
         sys.exit(2)
+    elif all_changed:
+        sys.exit(1)
+    else:
+        sys.exit(0)
 
 
 def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
@@ -53,7 +62,7 @@ def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
     pipfile.packages = sorted_packages
 
     # Store sorted data
-    with open(pipfile_path, 'w', encoding=encoding) as f:
+    with open(pipfile_path, "w", encoding=encoding) as f:
         Pipfile.dump(pipfile, f)
 
     return pipfile, all_changed
@@ -74,10 +83,14 @@ def sort_collection(org_collection):
     org_packages = list(org_collection)
     sorted_packages = sorted(org_packages)
 
-    return (
-        PackageCollection({
-            p: org_collection[p]._data for p in sorted_packages
-        }),
-        org_packages != sorted_packages,
+    # Create a new PackageCollection with sorted packages
+    # Note: Using _data is necessary to access the internal data structure
+    sorted_collection = PackageCollection(
+        {
+            # pylint: disable=protected-access
+            p: org_collection[p]._data
+            for p in sorted_packages
+        }
     )
 
+    return sorted_collection, org_packages != sorted_packages
