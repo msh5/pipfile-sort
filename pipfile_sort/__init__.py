@@ -24,34 +24,6 @@ def main(exit_code):
         sys.exit(2)
 
 
-def sort_collection(org_collection):
-    """
-    Sort a package collection alphabetically.
-    
-    Args:
-        org_collection: The original package collection to sort.
-        
-    Returns:
-        A tuple containing:
-        - The sorted package collection.
-        - A boolean indicating whether changes were made.
-    """
-    org_packages = [p for p in org_collection]
-    sorted_packages = sorted(org_packages)
-
-    return (
-        PackageCollection({
-            p: org_collection[p]._data for p in sorted_packages
-        }),
-        org_packages != sorted_packages,
-    )
-
-
-# Keep the original function for backward compatibility
-def __sort_collection(org_collection):
-    return sort_collection(org_collection)
-
-
 def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
     """
     Sort a Pipfile and return the sorted Pipfile and whether changes were made.
@@ -86,4 +58,27 @@ def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
         Pipfile.dump(pipfile, f)
     
     return pipfile, all_changed
+
+
+def sort_collection(org_collection):
+    """
+    Sort a package collection alphabetically.
+    
+    Args:
+        org_collection: The original package collection to sort.
+        
+    Returns:
+        A tuple containing:
+        - The sorted package collection.
+        - A boolean indicating whether changes were made.
+    """
+    org_packages = [p for p in org_collection]
+    sorted_packages = sorted(org_packages)
+
+    return (
+        PackageCollection({
+            p: org_collection[p]._data for p in sorted_packages
+        }),
+        org_packages != sorted_packages,
+    )
 
