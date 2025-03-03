@@ -16,25 +16,8 @@ PIPFILE_ENCODING = 'utf-8'
     'change to behavior of exit code. default behavior of return value, 0 is no differences, 1 is error exit. '
     'return 2 when add this option. 2 is exists differences.')
 def main(exit_code):
-    # Load current data.
-    with open(PIPFILE_FILENAME, encoding=PIPFILE_ENCODING) as f:
-        pipfile = Pipfile.load(f)
-
-    # Sort "dev-packages" mapping.
-    sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-
-    # Sort "packages" mapping.
-    sorted_packages, changed = sort_collection(pipfile.packages)
-    if changed:
-        all_changed = True
-
-    # Replace with sorted lists
-    pipfile.dev_packages = sorted_dev_packages
-    pipfile.packages = sorted_packages
-
-    # Store sorted data.
-    with open(PIPFILE_FILENAME, 'w', encoding=PIPFILE_ENCODING) as f:
-        Pipfile.dump(pipfile, f)
+    # Sort the Pipfile and get whether changes were made
+    _, all_changed = sort_pipfile(PIPFILE_FILENAME, PIPFILE_ENCODING)
 
     # When --exit-code option is valid and package collection has been changed, exit with 2.
     if exit_code and all_changed:
