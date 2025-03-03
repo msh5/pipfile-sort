@@ -21,10 +21,10 @@ def main(exit_code):
         pipfile = Pipfile.load(f)
 
     # Sort "dev-packages" mapping.
-    sorted_dev_packages, all_changed = __sort_collection(pipfile.dev_packages)
+    sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
 
     # Sort "packages" mapping.
-    sorted_packages, changed = __sort_collection(pipfile.packages)
+    sorted_packages, changed = sort_collection(pipfile.packages)
     if changed:
         all_changed = True
 
@@ -41,7 +41,18 @@ def main(exit_code):
         sys.exit(2)
 
 
-def __sort_collection(org_collection):
+def sort_collection(org_collection):
+    """
+    Sort a package collection alphabetically.
+    
+    Args:
+        org_collection: The original package collection to sort.
+        
+    Returns:
+        A tuple containing:
+        - The sorted package collection.
+        - A boolean indicating whether changes were made.
+    """
     org_packages = [p for p in org_collection]
     sorted_packages = sorted(org_packages)
 
@@ -51,4 +62,45 @@ def __sort_collection(org_collection):
         }),
         org_packages != sorted_packages,
     )
+
+
+# Keep the original function for backward compatibility
+def __sort_collection(org_collection):
+    return sort_collection(org_collection)
+
+
+def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
+    """
+    Sort a Pipfile and return the sorted Pipfile and whether changes were made.
+    
+    Args:
+        pipfile_path: Path to the Pipfile to sort.
+        encoding: Encoding of the Pipfile.
+        
+    Returns:
+        A tuple containing:
+        - The sorted Pipfile object.
+        - A boolean indicating whether changes were made.
+    """
+    # Load current data
+    with open(pipfile_path, encoding=encoding) as f:
+        pipfile = Pipfile.load(f)
+    
+    # Sort "dev-packages" mapping
+    sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
+    
+    # Sort "packages" mapping
+    sorted_packages, changed = sort_collection(pipfile.packages)
+    if changed:
+        all_changed = True
+    
+    # Replace with sorted lists
+    pipfile.dev_packages = sorted_dev_packages
+    pipfile.packages = sorted_packages
+    
+    # Store sorted data
+    with open(pipfile_path, 'w', encoding=encoding) as f:
+        Pipfile.dump(pipfile, f)
+    
+    return pipfile, all_changed
 

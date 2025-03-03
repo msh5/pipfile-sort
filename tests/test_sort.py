@@ -13,19 +13,6 @@ from plette.pipfiles import PackageCollection
 import pipfile_sort
 
 
-# Define our own sort_collection function that mimics the behavior of pipfile_sort.__sort_collection
-def sort_collection(org_collection):
-    org_packages = [p for p in org_collection]
-    sorted_packages = sorted(org_packages)
-
-    return (
-        PackageCollection({
-            p: org_collection[p]._data for p in sorted_packages
-        }),
-        org_packages != sorted_packages,
-    )
-
-
 @contextmanager
 def change_dir(path):
     """Context manager for changing the current working directory."""
@@ -48,27 +35,7 @@ def setup_test_pipfile(temp_dir, fixtures_dir, fixture_subdir, fixture_name="Pip
 
 def sort_pipfile(pipfile_path):
     """Sort a Pipfile and return the sorted Pipfile and whether changes were made."""
-    # Load current data
-    with open(pipfile_path, encoding="utf-8") as f:
-        pipfile = Pipfile.load(f)
-    
-    # Sort "dev-packages" mapping
-    sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-    
-    # Sort "packages" mapping
-    sorted_packages, changed = sort_collection(pipfile.packages)
-    if changed:
-        all_changed = True
-    
-    # Replace with sorted lists
-    pipfile.dev_packages = sorted_dev_packages
-    pipfile.packages = sorted_packages
-    
-    # Store sorted data
-    with open(pipfile_path, 'w', encoding="utf-8") as f:
-        Pipfile.dump(pipfile, f)
-    
-    return pipfile, all_changed
+    return pipfile_sort.sort_pipfile(pipfile_path)
 
 
 def load_pipfile(pipfile_path):
@@ -126,47 +93,13 @@ def test_exit_code(temp_dir, fixtures_dir):
     # Change directory and run the sort twice
     with change_dir(temp_dir):
         # First run - should make changes
-        with open(temp_pipfile, encoding="utf-8") as f:
-            pipfile = Pipfile.load(f)
-        
-        # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-        
-        # Sort "packages" mapping
-        sorted_packages, changed = sort_collection(pipfile.packages)
-        if changed:
-            all_changed = True
-        
-        # Replace with sorted lists
-        pipfile.dev_packages = sorted_dev_packages
-        pipfile.packages = sorted_packages
-        
-        # Store sorted data
-        with open(temp_pipfile, 'w', encoding="utf-8") as f:
-            Pipfile.dump(pipfile, f)
+        _, all_changed = pipfile_sort.sort_pipfile(temp_pipfile)
         
         # Check that changes were made
         assert all_changed is True
         
         # Second run - should not make changes
-        with open(temp_pipfile, encoding="utf-8") as f:
-            pipfile = Pipfile.load(f)
-        
-        # Sort "dev-packages" mapping
-        sorted_dev_packages, all_changed = sort_collection(pipfile.dev_packages)
-        
-        # Sort "packages" mapping
-        sorted_packages, changed = sort_collection(pipfile.packages)
-        if changed:
-            all_changed = True
-        
-        # Replace with sorted lists
-        pipfile.dev_packages = sorted_dev_packages
-        pipfile.packages = sorted_packages
-        
-        # Store sorted data
-        with open(temp_pipfile, 'w', encoding="utf-8") as f:
-            Pipfile.dump(pipfile, f)
+        _, all_changed = pipfile_sort.sort_pipfile(temp_pipfile)
         
         # Check that no changes were made
         assert all_changed is False
