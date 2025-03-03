@@ -24,6 +24,45 @@ def change_dir(path):
         os.chdir(original_dir)
 
 
+def test_basic_sort(temp_dir, fixtures_dir):
+    """Test basic sorting of packages."""
+    run_sort_test(temp_dir, fixtures_dir, "basic")
+
+
+def test_empty_sections(temp_dir, fixtures_dir):
+    """Test sorting of empty package sections."""
+    sorted_pipfile, _ = run_sort_test(temp_dir, fixtures_dir, "empty_sections", has_expected_file=False)
+    
+    # Check that the empty sections are handled correctly
+    assert list(sorted_pipfile.packages) == []
+    assert list(sorted_pipfile.dev_packages) == []
+
+
+def test_version_specifiers(temp_dir, fixtures_dir):
+    """Test sorting of packages with version specifiers."""
+    run_sort_test(temp_dir, fixtures_dir, "version_specifiers")
+
+
+def test_exit_code(temp_dir, fixtures_dir):
+    """Test the --exit-code flag."""
+    # Set up test files
+    temp_pipfile = setup_test_pipfile(temp_dir, fixtures_dir, "basic")
+    
+    # Change directory and run the sort twice
+    with change_dir(temp_dir):
+        # First run - should make changes
+        _, all_changed = pipfile_sort.sort_pipfile(temp_pipfile)
+        
+        # Check that changes were made
+        assert all_changed is True
+        
+        # Second run - should not make changes
+        _, all_changed = pipfile_sort.sort_pipfile(temp_pipfile)
+        
+        # Check that no changes were made
+        assert all_changed is False
+
+
 def setup_test_pipfile(temp_dir, fixtures_dir, fixture_subdir, fixture_name="Pipfile"):
     """Set up a test Pipfile in the temporary directory."""
     fixture_path = fixtures_dir / fixture_subdir / fixture_name
@@ -64,42 +103,3 @@ def run_sort_test(temp_dir, fixtures_dir, fixture_subdir, has_expected_file=True
             assert list(sorted_pipfile.dev_packages) == list(expected_pipfile.dev_packages)
             
         return sorted_pipfile, all_changed
-
-
-def test_basic_sort(temp_dir, fixtures_dir):
-    """Test basic sorting of packages."""
-    run_sort_test(temp_dir, fixtures_dir, "basic")
-
-
-def test_empty_sections(temp_dir, fixtures_dir):
-    """Test sorting of empty package sections."""
-    sorted_pipfile, _ = run_sort_test(temp_dir, fixtures_dir, "empty_sections", has_expected_file=False)
-    
-    # Check that the empty sections are handled correctly
-    assert list(sorted_pipfile.packages) == []
-    assert list(sorted_pipfile.dev_packages) == []
-
-
-def test_version_specifiers(temp_dir, fixtures_dir):
-    """Test sorting of packages with version specifiers."""
-    run_sort_test(temp_dir, fixtures_dir, "version_specifiers")
-
-
-def test_exit_code(temp_dir, fixtures_dir):
-    """Test the --exit-code flag."""
-    # Set up test files
-    temp_pipfile = setup_test_pipfile(temp_dir, fixtures_dir, "basic")
-    
-    # Change directory and run the sort twice
-    with change_dir(temp_dir):
-        # First run - should make changes
-        _, all_changed = pipfile_sort.sort_pipfile(temp_pipfile)
-        
-        # Check that changes were made
-        assert all_changed is True
-        
-        # Second run - should not make changes
-        _, all_changed = pipfile_sort.sort_pipfile(temp_pipfile)
-        
-        # Check that no changes were made
-        assert all_changed is False
