@@ -8,8 +8,7 @@ load-plugins=
 disable=
     C0111, # missing-docstring
     W0511, # fixme
-    C1803, # use-implicit-booleaness-not-comparison (for test files)
-    C0303  # trailing-whitespace (for test files)
+    C1803  # use-implicit-booleaness-not-comparison (for test files)
 
 [FORMAT]
 max-line-length=88

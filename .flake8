@@ -1,5 +1,3 @@
 [flake8]
 max-line-length = 88
 exclude = .git,__pycache__,build,dist
-# Preserve original code style in test files
-per-file-ignores = tests/*:W293
