@@ -24,20 +24,10 @@ def main(exit_code):
     _, all_changed = sort_pipfile(PIPFILE_FILENAME, PIPFILE_ENCODING)
 
     # Exit code handling based on changes and flags
-    if exit_code:
-        # With --exit-code flag:
-        # Exit 0: Success, no changes
-        # Exit 1: Error (not handled here)
-        # Exit 2: Success with changes
-        if all_changed:
-            sys.exit(2)  # Success with changes
-        else:
-            sys.exit(0)  # Success, no changes
+    if exit_code and all_changed:
+        sys.exit(2)
     else:
-        # Without --exit-code flag:
-        # Exit 0: Success
-        # Exit 1: Error (not handled here)
-        sys.exit(0)  # Success
+        sys.exit(0)
 
 
 def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
