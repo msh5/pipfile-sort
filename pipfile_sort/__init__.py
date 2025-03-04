@@ -15,21 +15,29 @@ PIPFILE_ENCODING = "utf-8"
 @option(
     "--exit-code",
     is_flag=True,
-    help="Modify exit code behavior. Without flag: returns 0 if no changes needed, "
-    "1 if changes were made. With flag: returns 0 if no changes needed, "
-    "2 if changes were made (useful for CI/CD).",
+    help="Modify exit code behavior. Without flag: exit 0 for success, "
+    "exit 1 for errors. With flag: exit 0 for success without changes, "
+    "exit 1 for errors, exit 2 for success with changes.",
 )
 def main(exit_code):
     # Sort the Pipfile and get whether changes were made
     _, all_changed = sort_pipfile(PIPFILE_FILENAME, PIPFILE_ENCODING)
 
     # Exit code handling based on changes and flags
-    if exit_code and all_changed:
-        sys.exit(2)
-    elif all_changed:
-        sys.exit(1)
+    if exit_code:
+        # With --exit-code flag:
+        # Exit 0: Success, no changes
+        # Exit 1: Error (not handled here)
+        # Exit 2: Success with changes
+        if all_changed:
+            sys.exit(2)  # Success with changes
+        else:
+            sys.exit(0)  # Success, no changes
     else:
-        sys.exit(0)
+        # Without --exit-code flag:
+        # Exit 0: Success
+        # Exit 1: Error (not handled here)
+        sys.exit(0)  # Success
 
 
 def sort_pipfile(pipfile_path, encoding=PIPFILE_ENCODING):
@@ -94,3 +102,4 @@ def sort_collection(org_collection):
     )
 
     return sorted_collection, org_packages != sorted_packages
+
