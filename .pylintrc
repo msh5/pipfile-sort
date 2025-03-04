@@ -7,8 +7,7 @@ load-plugins=
 [MESSAGES CONTROL]
 disable=
     C0111, # missing-docstring
-    W0511, # fixme
-    C1803  # use-implicit-booleaness-not-comparison (for test files)
+    W0511  # fixme
 
 [FORMAT]
 max-line-length=88
