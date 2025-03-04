@@ -20,7 +20,3 @@ indent_size = 2
 # Markdown files
 [*.md]
 trim_trailing_whitespace = false
-
-# Test files - preserve original style
-[tests/**.py]
-trim_trailing_whitespace = false
