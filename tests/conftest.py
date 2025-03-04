@@ -1,4 +1,3 @@
-import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -9,9 +8,9 @@ import pytest
 @pytest.fixture
 def temp_dir():
     """Create a temporary directory for testing."""
-    temp_dir = tempfile.mkdtemp()
-    yield temp_dir
-    shutil.rmtree(temp_dir)
+    temp_directory = tempfile.mkdtemp()
+    yield temp_directory
+    shutil.rmtree(temp_directory)
 
 
 @pytest.fixture

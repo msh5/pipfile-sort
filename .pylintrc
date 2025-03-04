@@ -1,0 +1,22 @@
+[MASTER]
+ignore=CVS
+ignore-patterns=
+persistent=yes
+load-plugins=
+
+[MESSAGES CONTROL]
+disable=
+    C0111, # missing-docstring
+    W0511, # fixme
+    C1803  # use-implicit-booleaness-not-comparison
+
+[FORMAT]
+max-line-length=88
+
+[DESIGN]
+max-args=5
+max-attributes=7
+max-branches=12
+max-locals=15
+max-returns=6
+max-statements=50
