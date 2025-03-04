@@ -15,9 +15,9 @@ PIPFILE_ENCODING = "utf-8"
 @option(
     "--exit-code",
     is_flag=True,
-    help="change to behavior of exit code. default behavior of return value, "
-    "0 is no differences, 1 is error exit. return 2 when add this option. "
-    "2 is exists differences.",
+    help="Modify exit code behavior. Without this flag: returns 0 if no changes needed, "
+    "1 if changes were made. With this flag: returns 0 if no changes needed, "
+    "2 if changes were made (useful for CI/CD pipelines).",
 )
 def main(exit_code):
     # Sort the Pipfile and get whether changes were made
@@ -94,3 +94,4 @@ def sort_collection(org_collection):
     )
 
     return sorted_collection, org_packages != sorted_packages
+
