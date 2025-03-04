@@ -31,8 +31,8 @@ def test_empty_sections(temp_dir, fixtures_dir):
         temp_dir, fixtures_dir, "empty_sections", has_expected_file=False
     )
     # Check that the empty sections are handled correctly
-    assert list(sorted_pipfile.packages) == []
-    assert list(sorted_pipfile.dev_packages) == []
+    assert not list(sorted_pipfile.packages)
+    assert not list(sorted_pipfile.dev_packages)
 
 
 def test_version_specifiers(temp_dir, fixtures_dir):
