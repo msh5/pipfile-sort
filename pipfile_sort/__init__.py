@@ -15,8 +15,8 @@ PIPFILE_ENCODING = "utf-8"
 @option(
     "--exit-code",
     is_flag=True,
-    help="Modify exit code behavior. Without this flag: returns 0 if no changes needed, "
-    "1 if changes were made. With this flag: returns 0 if no changes needed, "
+    help="Modify exit code behavior. Without flag: returns 0 if no changes needed, "
+    "1 if changes were made. With flag: returns 0 if no changes needed, "
     "2 if changes were made (useful for CI/CD).",
 )
 def main(exit_code):
@@ -94,3 +94,4 @@ def sort_collection(org_collection):
     )
 
     return sorted_collection, org_packages != sorted_packages
+
