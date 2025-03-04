@@ -94,4 +94,3 @@ def sort_collection(org_collection):
     )
 
     return sorted_collection, org_packages != sorted_packages
-
