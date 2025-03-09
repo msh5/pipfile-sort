@@ -30,3 +30,19 @@ cd /path/to/pipfile/dir
 # Rewrite Pipfile as the package lists are sorted.
 pipfile-sort
 ```
+
+## Pre-commit Hook
+
+This package can be used as a [pre-commit](https://pre-commit.com/) hook.
+
+Add this to your `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+- repo: https://github.com/msh5/pipfile-sort
+  rev: v0.2.2  # Use the latest version
+  hooks:
+  - id: pipfile-sort
+```
+
+The hook will automatically sort your Pipfile when you commit changes.

@@ -1,0 +1,7 @@
+- id: pipfile-sort
+  name: Sort Pipfile dependencies
+  description: Sort package dependency lists in Pipfile alphabetically
+  entry: pipfile-sort
+  language: python
+  files: ^Pipfile$
+  args: [--exit-code]

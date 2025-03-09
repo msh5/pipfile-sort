@@ -1,0 +1,5 @@
+repos:
+- repo: https://github.com/msh5/pipfile-sort
+  rev: v0.2.2  # Use the latest version
+  hooks:
+  - id: pipfile-sort
