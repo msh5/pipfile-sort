@@ -5,3 +5,4 @@
   language: python
   files: ^Pipfile$
   args: [--exit-code]
+  pass_filenames: false
